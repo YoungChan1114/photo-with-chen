@@ -2,7 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>PHOTOWITHCHEN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PHOTOWITHCHEN</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
@@ -29,7 +30,7 @@
         .app-container { 
             width: 100%; 
             max-width: 500px; 
-            padding: 10px; /* 手機版間距縮小一點 */
+            padding: 15px; 
             text-align: center; 
             min-height: 100vh; 
             display: flex; 
@@ -42,7 +43,7 @@
         .active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 選擇樣式區塊 */
+        /* 選擇樣式 - 紅色邊框優化版 */
         .temp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 20px 0; }
         .temp-item { 
             border: 3px solid var(--black); 
@@ -58,72 +59,56 @@
             background: #f0faff; 
             color: var(--red);
             transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(220, 54, 46, 0.3);
         }
         .temp-item img { width: 100%; border-radius: 8px; }
         .temp-item span { display: block; margin-top: 5px; font-size: 10px; }
 
-        /* ⚡️ 修正重點：拍攝視窗適應性 */
+        /* 拍攝視窗 - 防止扁塌 */
         .preview-box {
             position: relative;
-            width: 100%; /* 使用 100% 寬度 */
-            max-width: 480px; 
+            width: 100%;
             margin: 20px auto;
-            background: #000; 
-            border: 6px solid var(--black); 
-            border-radius: 15px; 
-            overflow: hidden;
-            aspect-ratio: 4.8 / 3.1; /* 強制鎖定比例 */
+            background: #000; border: 6px solid var(--black); border-radius: 20px; overflow: hidden;
+            aspect-ratio: 4.8 / 3.1;
             box-shadow: 8px 8px 0px var(--blue);
         }
-        
-        #main-video { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; /* ⚡️ 關鍵：確保不壓扁，多出的畫面會被裁掉 */
-            transform: scaleX(-1); 
-        }
-
+        #main-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
         .idol-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; object-fit: cover; }
         .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; z-index: 15; text-shadow: 0 0 20px rgba(0,0,0,0.9); color: var(--white); }
+        
         #flash-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 50; }
         .flash-active { animation: flash-play 0.4s ease-out; }
         @keyframes flash-play { 0% { opacity: 1; } 100% { opacity: 0; } }
 
-        /* 按鈕系統 */
+        /* 按鈕與選單 */
         button { 
             font-family: "Dela Gothic One", sans-serif;
-            background: var(--blue); 
-            color: var(--white); 
-            border: 3px solid var(--black); 
-            padding: 14px 28px; 
-            border-radius: 12px; 
-            font-size: 16px; 
-            cursor: pointer; 
-            margin: 10px; 
-            box-shadow: 0 5px 0 var(--black);
-            transition: all 0.1s;
+            background: var(--blue); color: var(--white); border: 3px solid var(--black); 
+            padding: 14px 28px; border-radius: 15px; font-size: 16px; cursor: pointer; margin: 10px; 
+            box-shadow: 0 5px 0 var(--black); transition: all 0.1s;
         }
         button:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--black); }
-        button:disabled { background: #ccc; border-color: #999; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
+        button:disabled { background: #ccc; cursor: not-allowed; opacity: 0.6; }
         #start-btn { background: var(--red); }
-        .back-btn { background: var(--white); border: 2px solid var(--black); color: var(--black); padding: 8px 16px; font-size: 12px; box-shadow: 0 3px 0 var(--black); }
-        
-        select { font-family: "Dela Gothic One", sans-serif; padding: 8px; border-radius: 8px; background: var(--white); color: var(--black); border: 2px solid var(--black); }
+        .back-btn { background: var(--white); color: var(--black); border: 2px solid var(--black); font-size: 12px; padding: 8px 16px; }
 
-        /* 結果展示 */
-        #final-preview-img { width: 220px; border: 6px solid var(--black); border-radius: 8px; margin: 20px; background: white; box-shadow: 8px 8px 0px var(--blue); }
+        /* 結果預覽區 */
+        .result-scroll { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 10px; }
+        #final-preview-img, #final-video-preview { 
+            width: 220px; border: 6px solid var(--black); border-radius: 10px; background: white; 
+            box-shadow: 8px 8px 0px var(--blue);
+        }
         .loading-spinner { border: 5px solid var(--white); border-top: 5px solid var(--blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        h2 { font-size: 1.2rem; color: var(--black); margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div id="sc-start" class="screen active">
-        <img src="title.png" alt="PHOTOWITHCHEN" style="width:100%; max-width:300px; margin-bottom:20px;">
-        <div class="welcome-sub" style="color:var(--blue)">限定版建璋拍貼</div>
+        <img src="title.png" alt="TITLE" style="width:100%; max-width:300px; margin-bottom:20px;">
+        <div style="color:var(--blue); margin-bottom:30px;">限定版建璋拍貼</div>
         <button onclick="goStep('sc-welcome')">START</button>
     </div>
 
@@ -134,9 +119,9 @@
             <div class="temp-item" onclick="selectTemp('template_2.png', this)"><img src="template_2.png"><span>MODE 2</span></div>
             <div class="temp-item" onclick="selectTemp('template_3.png', this)"><img src="template_3.png"><span>MODE 3</span></div>
         </div>
-        <div style="margin:20px 0;">
+        <div style="margin:15px 0;">
             FILTER: 
-            <select id="filter-choice" onchange="applyFilter()">
+            <select id="filter-choice" onchange="applyFilter()" style="padding:8px; border-radius:8px; border:2px solid var(--black);">
                 <option value="none">ORIGINAL</option>
                 <option value="grayscale(1)">B&W</option>
                 <option value="sepia(0.4) brightness(1.1)">SOFT</option>
@@ -144,8 +129,7 @@
             </select>
         </div>
         <button onclick="goStep('sc-shooting')">READY</button>
-        <br>
-        <button class="back-btn" onclick="goStep('sc-start')">HOME</button>
+        <br><button class="back-btn" onclick="goStep('sc-start')">HOME</button>
     </div>
 
     <div id="sc-shooting" class="screen">
@@ -162,14 +146,17 @@
 
     <div id="sc-result" class="screen">
         <h2>COMPLETE!</h2>
+        <p id="ios-tip" style="display:none; font-size:11px; color:var(--red); margin:5px;">若無法下載，請長按圖片/影片選擇儲存</p>
         <div id="loading-area">
             <div class="loading-spinner"></div>
-            <p id="status-text">PROCESSING...</p>
+            <p>PROCESSING...</p>
         </div>
-        <img id="final-preview-img" style="display:none;">
-        <br>
+        <div class="result-scroll">
+            <img id="final-preview-img" style="display:none;">
+            <video id="final-video-preview" style="display:none;" controls playsinline loop></video>
+        </div>
         <button id="dl-all-btn" style="display:none;">DOWNLOAD ALL</button>
-        <button class="back-btn" onclick="location.reload()">RETAKE</button>
+        <br><button class="back-btn" onclick="location.reload()">RETAKE</button>
     </div>
 </div>
 
@@ -178,12 +165,8 @@
 <canvas id="video-comp-cvs" style="display:none;"></canvas>
 
 <script>
-let currentShot = 0;
-    let videoBlobs = []; 
-    let photoData = [];  
-    let chosenTemp = 'template_1.png';
+    let currentShot = 0, videoBlobs = [], photoData = [], chosenTemp = 'template_1.png', cameraStream;
     const idols = ['idolchen_1.png', 'idolchen_2.png', 'idolchen_3.png', 'idolchen_4.png'];
-    let cameraStream;
 
     function goStep(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -195,14 +178,10 @@ let currentShot = 0;
         if(!cameraStream) {
             try {
                 cameraStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'user',
-                        width: { ideal: 1920 }, // 請求更高畫質的輸入
-                        height: { ideal: 1080 }
-                    } 
+                    video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 } } 
                 });
                 document.getElementById('main-video').srcObject = cameraStream;
-            } catch(e) { alert("Camera Error"); }
+            } catch(e) { alert("請允許相機權限"); }
         }
     }
 
@@ -212,64 +191,43 @@ let currentShot = 0;
         el.classList.add('selected');
     }
 
-    function applyFilter() {
-        document.getElementById('main-video').style.filter = document.getElementById('filter-choice').value;
-    }
+    function applyFilter() { document.getElementById('main-video').style.filter = document.getElementById('filter-choice').value; }
 
     function drawProportionately(ctx, source, canvasWidth, canvasHeight) {
         const sourceRatio = source.videoWidth / source.videoHeight;
         const targetRatio = canvasWidth / canvasHeight;
         let sw, sh, sx, sy;
-
         if (sourceRatio > targetRatio) {
-            sh = source.videoHeight;
-            sw = sh * targetRatio;
-            sx = (source.videoWidth - sw) / 2;
-            sy = 0;
+            sh = source.videoHeight; sw = sh * targetRatio;
+            sx = (source.videoWidth - sw) / 2; sy = 0;
         } else {
-            sw = source.videoWidth;
-            sh = sw / targetRatio;
-            sx = 0;
-            sy = (source.videoHeight - sh) / 2;
+            sw = source.videoWidth; sh = sw / targetRatio;
+            sx = 0; sy = (source.videoHeight - sh) / 2;
         }
         ctx.drawImage(source, sx, sy, sw, sh, 0, 0, canvasWidth, canvasHeight);
     }
 
     async function takeShot() {
-        const startBtn = document.getElementById('start-btn');
-        startBtn.disabled = true;
-        const v = document.getElementById('main-video');
-        const filter = document.getElementById('filter-choice').value;
-        const idolImg = new Image(); 
-        idolImg.src = idols[currentShot];
+        const startBtn = document.getElementById('start-btn'), v = document.getElementById('main-video');
+        const filter = document.getElementById('filter-choice').value, idolImg = new Image();
+        startBtn.disabled = true; idolImg.src = idols[currentShot];
 
-        const rCvs = document.getElementById('rec-cvs');
-        const rCtx = rCvs.getContext('2d');
-        
-        // ⚡️ 提升錄製畫布解析度 (HD)
-        rCvs.width = 1280; 
-        rCvs.height = 824;
+        const rCvs = document.getElementById('rec-cvs'), rCtx = rCvs.getContext('2d');
+        rCvs.width = 1280; rCvs.height = 824; // HD 錄製
 
         const recStream = rCvs.captureStream(30);
-        // ⚡️ 設定高位元率錄製 (5Mbps)
-        const recorder = new MediaRecorder(recStream, { 
-            mimeType: 'video/webm;codecs=vp8',
-            videoBitsPerSecond: 5000000 
-        });
-        
+        const recorder = new MediaRecorder(recStream, { mimeType: 'video/webm;codecs=vp8', videoBitsPerSecond: 5000000 });
         const chunks = [];
-        recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
+        recorder.ondataavailable = e => chunks.push(e.data);
         recorder.onstop = () => videoBlobs.push(new Blob(chunks, { type: 'video/webm' }));
         recorder.start();
 
         let isRecording = true;
         const renderLoop = () => {
-            rCtx.save();
-            rCtx.filter = filter;
+            rCtx.save(); rCtx.filter = filter;
             rCtx.translate(rCvs.width, 0); rCtx.scale(-1, 1);
             drawProportionately(rCtx, v, rCvs.width, rCvs.height);
-            rCtx.restore();
-            rCtx.drawImage(idolImg, 0, 0, rCvs.width, rCvs.height);
+            rCtx.restore(); rCtx.drawImage(idolImg, 0, 0, rCvs.width, rCvs.height);
             if(isRecording) requestAnimationFrame(renderLoop);
         };
         renderLoop();
@@ -279,44 +237,37 @@ let currentShot = 0;
             await new Promise(r => setTimeout(r, 1000));
         }
         document.getElementById('timer-text').innerText = "";
-
+        
         const flash = document.getElementById('flash-layer');
         flash.classList.add('flash-active');
         setTimeout(() => flash.classList.remove('flash-active'), 400);
 
-        // 照片本來就是 2450px，維持高解析度不變
         const pCvs = document.createElement('canvas');
         pCvs.width = 2450; pCvs.height = 1575;
         const pCtx = pCvs.getContext('2d');
-        pCtx.filter = filter;
-        pCtx.translate(pCvs.width, 0); pCtx.scale(-1, 1);
+        pCtx.filter = filter; pCtx.translate(pCvs.width, 0); pCtx.scale(-1, 1);
         drawProportionately(pCtx, v, pCvs.width, pCvs.height);
-        pCtx.setTransform(1,0,0,1,0,0);
-        pCtx.drawImage(idolImg, 0, 0, pCvs.width, pCvs.height);
-        photoData.push(pCvs.toDataURL('image/png', 1.0)); // 提升品質參數到 1.0
+        pCtx.setTransform(1,0,0,1,0,0); pCtx.drawImage(idolImg, 0, 0, pCvs.width, pCvs.height);
+        photoData.push(pCvs.toDataURL('image/png', 1.0));
 
         setTimeout(() => {
-            isRecording = false;
-            recorder.stop();
-            currentShot++;
+            isRecording = false; recorder.stop(); currentShot++;
             if(currentShot < 4) {
                 document.getElementById('shot-label').innerText = `SHOT ${currentShot+1}/4`;
                 document.getElementById('idol-layer').src = idols[currentShot];
                 startBtn.disabled = false;
             } else {
-                startBtn.style.display = 'none';
-                document.getElementById('finish-btn').style.display = 'inline-block';
+                startBtn.style.display = 'none'; document.getElementById('finish-btn').style.display = 'inline-block';
             }
         }, 500);
     }
 
     async function generateAll() {
         goStep('sc-result');
-        const templateImg = new Image();
-        templateImg.src = chosenTemp;
+        const templateImg = new Image(); templateImg.src = chosenTemp;
         await new Promise(r => templateImg.onload = r);
 
-        // 相片合成 (維持超高解析度)
+        // 合成照片
         const photoCvs = document.getElementById('photo-cvs');
         photoCvs.width = 2600; photoCvs.height = 7650;
         const pCtx = photoCvs.getContext('2d');
@@ -328,45 +279,51 @@ let currentShot = 0;
         pCtx.drawImage(templateImg, 0, 0, 2600, 7650);
         const finalPhotoURL = photoCvs.toDataURL('image/png', 1.0);
         document.getElementById('final-preview-img').src = finalPhotoURL;
-        document.getElementById('final-preview-img').style.display = 'inline-block';
+        document.getElementById('final-preview-img').style.display = 'block';
 
-        // ⚡️ 影片最終合成：解析度提升至原來的 2 倍
+        // 合成影片 (2X HD)
         const vCvs = document.getElementById('video-comp-cvs');
-        vCvs.width = 1040; // 520 * 2
-        vCvs.height = 3060; // 1530 * 2
+        vCvs.width = 1040; vCvs.height = 3060;
         const vCtx = vCvs.getContext('2d');
-        
         const vElements = await Promise.all(videoBlobs.map(blob => {
             return new Promise(res => {
                 const v = document.createElement('video');
-                v.src = URL.createObjectURL(blob);
-                v.loop = true; v.muted = true; v.play();
+                v.src = URL.createObjectURL(blob); v.loop = true; v.muted = true; v.play();
                 v.onloadeddata = () => res(v);
             });
         }));
 
         const finalStream = vCvs.captureStream(30);
         const finalRecorder = new MediaRecorder(finalStream, { 
-            mimeType: 'video/webm;codecs=vp8',
-            videoBitsPerSecond: 8000000 // 最終輸出給予 8Mbps 高頻寬
+            mimeType: MediaRecorder.isTypeSupported('video/mp4;codecs=avc1') ? 'video/mp4;codecs=avc1' : 'video/webm;codecs=vp8',
+            videoBitsPerSecond: 8000000 
         });
-        const vChunks = [];
-        finalRecorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); }; // 修正變數名稱錯誤
-        
-        // 重新封裝最終錄製邏輯
         const finalChunks = [];
-        finalRecorder.ondataavailable = e => { if(e.data.size > 0) finalChunks.push(e.data); };
-        
+        finalRecorder.ondataavailable = e => finalChunks.push(e.data);
         finalRecorder.onstop = () => {
-            const finalVideoURL = URL.createObjectURL(new Blob(finalChunks, { type: 'video/mp4' }));
+            const isMp4 = finalRecorder.mimeType.includes('mp4');
+            const blob = new Blob(finalChunks, { type: isMp4 ? 'video/mp4' : 'video/webm' });
+            const finalVideoURL = URL.createObjectURL(blob);
+            
             document.getElementById('loading-area').style.display = 'none';
+            document.getElementById('ios-tip').style.display = 'block';
+            const vidPre = document.getElementById('final-video-preview');
+            vidPre.src = finalVideoURL; vidPre.style.display = 'block'; vidPre.play();
+
             const dlBtn = document.getElementById('dl-all-btn');
             dlBtn.style.display = 'inline-block';
             dlBtn.onclick = () => {
-                const a1 = document.createElement('a'); a1.href = finalPhotoURL; a1.download = 'PHOTOWITHCHEN_photo.png'; a1.click();
+                const a1 = document.createElement('a'); a1.href = finalPhotoURL; a1.download = 'PHOTO.png';
+                document.body.appendChild(a1); a1.click(); document.body.removeChild(a1);
+                
                 setTimeout(() => {
-                    const a2 = document.createElement('a'); a2.href = finalVideoURL; a2.download = 'PHOTOWITHCHEN_video.mp4'; a2.click();
-                }, 800);
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                    if(isIOS) { window.open(finalVideoURL, '_blank'); }
+                    else {
+                        const a2 = document.createElement('a'); a2.href = finalVideoURL; a2.download = `VIDEO.${isMp4?'mp4':'webm'}`;
+                        document.body.appendChild(a2); a2.click(); document.body.removeChild(a2);
+                    }
+                }, 1000);
             };
         };
 
@@ -374,11 +331,9 @@ let currentShot = 0;
         const startT = Date.now();
         const vLoop = () => {
             vCtx.clearRect(0,0,vCvs.width,vCvs.height);
-            // ⚡️ 對應 2 倍解析度的繪製座標
             const vX = 30, vYStart = 80, vGap = 680, vW = 980, vH = 630;
             vElements.forEach((v, i) => vCtx.drawImage(v, vX, vYStart + (i * vGap), vW, vH));
             vCtx.drawImage(templateImg, 0, 0, vCvs.width, vCvs.height);
-            
             if(Date.now() - startT < 4500) requestAnimationFrame(vLoop);
             else finalRecorder.stop();
         };
