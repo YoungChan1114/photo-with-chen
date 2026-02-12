@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>PHOTOWITHCHEN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>PHOTOWITHCHEN</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
@@ -29,23 +29,20 @@
         .app-container { 
             width: 100%; 
             max-width: 500px; 
-            padding: 20px; 
+            padding: 10px; /* 手機版間距縮小一點 */
             text-align: center; 
             min-height: 100vh; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
+            box-sizing: border-box;
         }
 
         .screen { display: none; }
         .active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 迎賓頁面 */
-        .title-img { width: 100%; max-width: 350px; margin-bottom: 20px; filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.1)); }
-        .welcome-sub { font-size: 1rem; color: var(--blue); margin-bottom: 40px; letter-spacing: 1px; }
-
-        /* 選擇樣式 - 更新為紅色邊框選取 */
+        /* 選擇樣式區塊 */
         .temp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 20px 0; }
         .temp-item { 
             border: 3px solid var(--black); 
@@ -58,26 +55,36 @@
         }
         .temp-item.selected { 
             border-color: var(--red); 
-            background: #f0faff; /* 淡淡的藍色底，不會太深 */
+            background: #f0faff; 
             color: var(--red);
-            box-shadow: 0 4px 12px rgba(220, 54, 46, 0.3);
             transform: scale(1.05);
         }
         .temp-item img { width: 100%; border-radius: 8px; }
-        .temp-item span { display: block; margin-top: 5px; font-size: 12px; }
+        .temp-item span { display: block; margin-top: 5px; font-size: 10px; }
 
-        /* 拍攝視窗 */
+        /* ⚡️ 修正重點：拍攝視窗適應性 */
         .preview-box {
             position: relative;
-            width: 480px; height: 310px; margin: 20px auto;
-            background: #000; border: 8px solid var(--black); border-radius: 20px; overflow: hidden;
-            max-width: 90vw; aspect-ratio: 4.8 / 3.1;
+            width: 100%; /* 使用 100% 寬度 */
+            max-width: 480px; 
+            margin: 20px auto;
+            background: #000; 
+            border: 6px solid var(--black); 
+            border-radius: 15px; 
+            overflow: hidden;
+            aspect-ratio: 4.8 / 3.1; /* 強制鎖定比例 */
             box-shadow: 8px 8px 0px var(--blue);
         }
-        #main-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        .idol-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
-        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; z-index: 15; text-shadow: 0 0 20px rgba(0,0,0,0.9); color: var(--white); }
         
+        #main-video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* ⚡️ 關鍵：確保不壓扁，多出的畫面會被裁掉 */
+            transform: scaleX(-1); 
+        }
+
+        .idol-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; object-fit: cover; }
+        .timer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; z-index: 15; text-shadow: 0 0 20px rgba(0,0,0,0.9); color: var(--white); }
         #flash-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 50; }
         .flash-active { animation: flash-play 0.4s ease-out; }
         @keyframes flash-play { 0% { opacity: 1; } 100% { opacity: 0; } }
@@ -88,42 +95,35 @@
             background: var(--blue); 
             color: var(--white); 
             border: 3px solid var(--black); 
-            padding: 16px 32px; 
-            border-radius: 15px; 
-            font-size: 18px; 
+            padding: 14px 28px; 
+            border-radius: 12px; 
+            font-size: 16px; 
             cursor: pointer; 
             margin: 10px; 
-            box-shadow: 0 6px 0 var(--black);
+            box-shadow: 0 5px 0 var(--black);
             transition: all 0.1s;
         }
-        button:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--black); }
+        button:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--black); }
         button:disabled { background: #ccc; border-color: #999; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
-        
         #start-btn { background: var(--red); }
-        #finish-btn { background: var(--blue); }
-
-        .back-btn { background: var(--white); border: 3px solid var(--black); color: var(--black); padding: 10px 20px; font-size: 14px; box-shadow: 0 4px 0 var(--black); }
+        .back-btn { background: var(--white); border: 2px solid var(--black); color: var(--black); padding: 8px 16px; font-size: 12px; box-shadow: 0 3px 0 var(--black); }
         
-        select { 
-            font-family: "Dela Gothic One", sans-serif;
-            padding: 10px; border-radius: 8px; background: var(--white); color: var(--black); border: 3px solid var(--black); font-size: 16px;
-        }
+        select { font-family: "Dela Gothic One", sans-serif; padding: 8px; border-radius: 8px; background: var(--white); color: var(--black); border: 2px solid var(--black); }
 
         /* 結果展示 */
-        #final-preview-img { width: 220px; border: 8px solid var(--black); border-radius: 10px; margin: 20px; background: white; box-shadow: 10px 10px 0px var(--blue); }
-        .loading-spinner { border: 6px solid var(--white); border-top: 6px solid var(--blue); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 20px auto; }
+        #final-preview-img { width: 220px; border: 6px solid var(--black); border-radius: 8px; margin: 20px; background: white; box-shadow: 8px 8px 0px var(--blue); }
+        .loading-spinner { border: 5px solid var(--white); border-top: 5px solid var(--blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        h2 { color: var(--black); text-shadow: 2px 2px 0px var(--white); }
+        h2 { font-size: 1.2rem; color: var(--black); margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    
     <div id="sc-start" class="screen active">
-        <img src="title.png" alt="PHOTOWITHCHEN" class="title-img">
-        <div class="welcome-sub">限定版建璋拍貼</div>
+        <img src="title.png" alt="PHOTOWITHCHEN" style="width:100%; max-width:300px; margin-bottom:20px;">
+        <div class="welcome-sub" style="color:var(--blue)">限定版建璋拍貼</div>
         <button onclick="goStep('sc-welcome')">START</button>
     </div>
 
@@ -149,7 +149,7 @@
     </div>
 
     <div id="sc-shooting" class="screen">
-        <h2 id="shot-label" style="letter-spacing: 2px;">SHOT 1/4</h2>
+        <h2 id="shot-label">SHOT 1/4</h2>
         <div class="preview-box">
             <video id="main-video" autoplay playsinline></video>
             <img id="idol-layer" class="idol-overlay" src="idolchen_1.png">
@@ -171,7 +171,6 @@
         <button id="dl-all-btn" style="display:none;">DOWNLOAD ALL</button>
         <button class="back-btn" onclick="location.reload()">RETAKE</button>
     </div>
-
 </div>
 
 <canvas id="rec-cvs" style="display:none;"></canvas>
@@ -179,7 +178,6 @@
 <canvas id="video-comp-cvs" style="display:none;"></canvas>
 
 <script>
-    /* 腳本邏輯保持不動 */
     let currentShot = 0;
     let videoBlobs = []; 
     let photoData = [];  
@@ -196,7 +194,14 @@
     async function startCam() {
         if(!cameraStream) {
             try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+                // ⚡️ 修正：不要強制指定 1280x720，讓手機自動適應最高畫質
+                cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
                 document.getElementById('main-video').srcObject = cameraStream;
             } catch(e) { alert("Camera Error"); }
         }
@@ -210,6 +215,26 @@
 
     function applyFilter() {
         document.getElementById('main-video').style.filter = document.getElementById('filter-choice').value;
+    }
+
+    // ⚡️ 修正：核心繪圖邏輯防止扁塌
+    function drawProportionately(ctx, source, canvasWidth, canvasHeight) {
+        const sourceRatio = source.videoWidth / source.videoHeight;
+        const targetRatio = canvasWidth / canvasHeight;
+        let sw, sh, sx, sy;
+
+        if (sourceRatio > targetRatio) {
+            sh = source.videoHeight;
+            sw = sh * targetRatio;
+            sx = (source.videoWidth - sw) / 2;
+            sy = 0;
+        } else {
+            sw = source.videoWidth;
+            sh = sw / targetRatio;
+            sx = 0;
+            sy = (source.videoHeight - sh) / 2;
+        }
+        ctx.drawImage(source, sx, sy, sw, sh, 0, 0, canvasWidth, canvasHeight);
     }
 
     async function takeShot() {
@@ -236,7 +261,7 @@
             rCtx.save();
             rCtx.filter = filter;
             rCtx.translate(rCvs.width, 0); rCtx.scale(-1, 1);
-            rCtx.drawImage(v, 0, 0, rCvs.width, rCvs.height);
+            drawProportionately(rCtx, v, rCvs.width, rCvs.height); // ⚡️ 修正點
             rCtx.restore();
             rCtx.drawImage(idolImg, 0, 0, rCvs.width, rCvs.height);
             if(isRecording) requestAnimationFrame(renderLoop);
@@ -250,16 +275,15 @@
         document.getElementById('timer-text').innerText = "";
 
         const flash = document.getElementById('flash-layer');
-        flash.classList.remove('flash-active');
-        void flash.offsetWidth;
         flash.classList.add('flash-active');
+        setTimeout(() => flash.classList.remove('flash-active'), 400);
 
         const pCvs = document.createElement('canvas');
         pCvs.width = 2450; pCvs.height = 1575;
         const pCtx = pCvs.getContext('2d');
         pCtx.filter = filter;
         pCtx.translate(pCvs.width, 0); pCtx.scale(-1, 1);
-        pCtx.drawImage(v, 0, 0, pCvs.width, pCvs.height);
+        drawProportionately(pCtx, v, pCvs.width, pCvs.height); // ⚡️ 修正點
         pCtx.setTransform(1,0,0,1,0,0);
         pCtx.drawImage(idolImg, 0, 0, pCvs.width, pCvs.height);
         photoData.push(pCvs.toDataURL('image/png', 0.95));
@@ -321,9 +345,9 @@
             const dlBtn = document.getElementById('dl-all-btn');
             dlBtn.style.display = 'inline-block';
             dlBtn.onclick = () => {
-                const a1 = document.createElement('a'); a1.href = finalPhotoURL; a1.download = 'PHOTOWITHCHEN_photo.png'; a1.click();
+                const a1 = document.createElement('a'); a1.href = finalPhotoURL; a1.download = 'PHOTO.png'; a1.click();
                 setTimeout(() => {
-                    const a2 = document.createElement('a'); a2.href = finalVideoURL; a2.download = 'PHOTOWITHCHEN_video.mp4'; a2.click();
+                    const a2 = document.createElement('a'); a2.href = finalVideoURL; a2.download = 'VIDEO.mp4'; a2.click();
                 }, 800);
             };
         };
