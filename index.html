@@ -45,10 +45,24 @@
         .title-img { width: 100%; max-width: 350px; margin-bottom: 20px; filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.1)); }
         .welcome-sub { font-size: 1rem; color: var(--blue); margin-bottom: 40px; letter-spacing: 1px; }
 
-        /* 選擇樣式 */
+        /* 選擇樣式 - 更新為紅色邊框選取 */
         .temp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 20px 0; }
-        .temp-item { border: 3px solid var(--black); padding: 5px; cursor: pointer; border-radius: 12px; transition: 0.3s; background: var(--white); }
-        .temp-item.selected { border-color: var(--blue); background: var(--blue); color: var(--white); }
+        .temp-item { 
+            border: 3px solid var(--black); 
+            padding: 5px; 
+            cursor: pointer; 
+            border-radius: 12px; 
+            transition: all 0.3s ease; 
+            background: var(--white); 
+            color: var(--black);
+        }
+        .temp-item.selected { 
+            border-color: var(--red); 
+            background: #f0faff; /* 淡淡的藍色底，不會太深 */
+            color: var(--red);
+            box-shadow: 0 4px 12px rgba(220, 54, 46, 0.3);
+            transform: scale(1.05);
+        }
         .temp-item img { width: 100%; border-radius: 8px; }
         .temp-item span { display: block; margin-top: 5px; font-size: 12px; }
 
@@ -85,7 +99,7 @@
         button:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--black); }
         button:disabled { background: #ccc; border-color: #999; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
         
-        #start-btn { background: var(--red); } /* 拍攝按鈕用紅色強調 */
+        #start-btn { background: var(--red); }
         #finish-btn { background: var(--blue); }
 
         .back-btn { background: var(--white); border: 3px solid var(--black); color: var(--black); padding: 10px 20px; font-size: 14px; box-shadow: 0 4px 0 var(--black); }
@@ -109,7 +123,7 @@
     
     <div id="sc-start" class="screen active">
         <img src="title.png" alt="PHOTOWITHCHEN" class="title-img">
-        <div class="welcome-sub">動態拍貼・捕捉專屬瞬間</div>
+        <div class="welcome-sub">限定版建璋拍貼</div>
         <button onclick="goStep('sc-welcome')">START</button>
     </div>
 
@@ -150,7 +164,7 @@
         <h2>COMPLETE!</h2>
         <div id="loading-area">
             <div class="loading-spinner"></div>
-            <p id="status-text">PROCESSING HD FILES...</p>
+            <p id="status-text">PROCESSING...</p>
         </div>
         <img id="final-preview-img" style="display:none;">
         <br>
@@ -165,7 +179,7 @@
 <canvas id="video-comp-cvs" style="display:none;"></canvas>
 
 <script>
-    /* 以下邏輯與你要求的定稿版完全一致，未做更動 */
+    /* 腳本邏輯保持不動 */
     let currentShot = 0;
     let videoBlobs = []; 
     let photoData = [];  
