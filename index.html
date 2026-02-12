@@ -178,7 +178,7 @@
 <canvas id="video-comp-cvs" style="display:none;"></canvas>
 
 <script>
-    let currentShot = 0;
+let currentShot = 0;
     let videoBlobs = []; 
     let photoData = [];  
     let chosenTemp = 'template_1.png';
@@ -194,12 +194,11 @@
     async function startCam() {
         if(!cameraStream) {
             try {
-                // ⚡️ 修正：不要強制指定 1280x720，讓手機自動適應最高畫質
                 cameraStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { 
                         facingMode: 'user',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
+                        width: { ideal: 1920 }, // 請求更高畫質的輸入
+                        height: { ideal: 1080 }
                     } 
                 });
                 document.getElementById('main-video').srcObject = cameraStream;
@@ -217,7 +216,6 @@
         document.getElementById('main-video').style.filter = document.getElementById('filter-choice').value;
     }
 
-    // ⚡️ 修正：核心繪圖邏輯防止扁塌
     function drawProportionately(ctx, source, canvasWidth, canvasHeight) {
         const sourceRatio = source.videoWidth / source.videoHeight;
         const targetRatio = canvasWidth / canvasHeight;
@@ -247,10 +245,18 @@
 
         const rCvs = document.getElementById('rec-cvs');
         const rCtx = rCvs.getContext('2d');
-        rCvs.width = 640; rCvs.height = 412;
+        
+        // ⚡️ 提升錄製畫布解析度 (HD)
+        rCvs.width = 1280; 
+        rCvs.height = 824;
 
         const recStream = rCvs.captureStream(30);
-        const recorder = new MediaRecorder(recStream, { mimeType: 'video/webm;codecs=vp8' });
+        // ⚡️ 設定高位元率錄製 (5Mbps)
+        const recorder = new MediaRecorder(recStream, { 
+            mimeType: 'video/webm;codecs=vp8',
+            videoBitsPerSecond: 5000000 
+        });
+        
         const chunks = [];
         recorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
         recorder.onstop = () => videoBlobs.push(new Blob(chunks, { type: 'video/webm' }));
@@ -261,7 +267,7 @@
             rCtx.save();
             rCtx.filter = filter;
             rCtx.translate(rCvs.width, 0); rCtx.scale(-1, 1);
-            drawProportionately(rCtx, v, rCvs.width, rCvs.height); // ⚡️ 修正點
+            drawProportionately(rCtx, v, rCvs.width, rCvs.height);
             rCtx.restore();
             rCtx.drawImage(idolImg, 0, 0, rCvs.width, rCvs.height);
             if(isRecording) requestAnimationFrame(renderLoop);
@@ -278,15 +284,16 @@
         flash.classList.add('flash-active');
         setTimeout(() => flash.classList.remove('flash-active'), 400);
 
+        // 照片本來就是 2450px，維持高解析度不變
         const pCvs = document.createElement('canvas');
         pCvs.width = 2450; pCvs.height = 1575;
         const pCtx = pCvs.getContext('2d');
         pCtx.filter = filter;
         pCtx.translate(pCvs.width, 0); pCtx.scale(-1, 1);
-        drawProportionately(pCtx, v, pCvs.width, pCvs.height); // ⚡️ 修正點
+        drawProportionately(pCtx, v, pCvs.width, pCvs.height);
         pCtx.setTransform(1,0,0,1,0,0);
         pCtx.drawImage(idolImg, 0, 0, pCvs.width, pCvs.height);
-        photoData.push(pCvs.toDataURL('image/png', 0.95));
+        photoData.push(pCvs.toDataURL('image/png', 1.0)); // 提升品質參數到 1.0
 
         setTimeout(() => {
             isRecording = false;
@@ -309,6 +316,7 @@
         templateImg.src = chosenTemp;
         await new Promise(r => templateImg.onload = r);
 
+        // 相片合成 (維持超高解析度)
         const photoCvs = document.getElementById('photo-cvs');
         photoCvs.width = 2600; photoCvs.height = 7650;
         const pCtx = photoCvs.getContext('2d');
@@ -318,13 +326,16 @@
             pCtx.drawImage(img, 75, 200 + (i * 1700), 2450, 1575);
         }
         pCtx.drawImage(templateImg, 0, 0, 2600, 7650);
-        const finalPhotoURL = photoCvs.toDataURL('image/png', 0.95);
+        const finalPhotoURL = photoCvs.toDataURL('image/png', 1.0);
         document.getElementById('final-preview-img').src = finalPhotoURL;
         document.getElementById('final-preview-img').style.display = 'inline-block';
 
+        // ⚡️ 影片最終合成：解析度提升至原來的 2 倍
         const vCvs = document.getElementById('video-comp-cvs');
-        vCvs.width = 520; vCvs.height = 1530;
+        vCvs.width = 1040; // 520 * 2
+        vCvs.height = 3060; // 1530 * 2
         const vCtx = vCvs.getContext('2d');
+        
         const vElements = await Promise.all(videoBlobs.map(blob => {
             return new Promise(res => {
                 const v = document.createElement('video');
@@ -335,19 +346,26 @@
         }));
 
         const finalStream = vCvs.captureStream(30);
-        const finalRecorder = new MediaRecorder(finalStream, { mimeType: 'video/webm;codecs=vp8' });
+        const finalRecorder = new MediaRecorder(finalStream, { 
+            mimeType: 'video/webm;codecs=vp8',
+            videoBitsPerSecond: 8000000 // 最終輸出給予 8Mbps 高頻寬
+        });
         const vChunks = [];
-        finalRecorder.ondataavailable = e => { if(e.data.size > 0) vChunks.push(e.data); };
+        finalRecorder.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); }; // 修正變數名稱錯誤
+        
+        // 重新封裝最終錄製邏輯
+        const finalChunks = [];
+        finalRecorder.ondataavailable = e => { if(e.data.size > 0) finalChunks.push(e.data); };
         
         finalRecorder.onstop = () => {
-            const finalVideoURL = URL.createObjectURL(new Blob(vChunks, { type: 'video/mp4' }));
+            const finalVideoURL = URL.createObjectURL(new Blob(finalChunks, { type: 'video/mp4' }));
             document.getElementById('loading-area').style.display = 'none';
             const dlBtn = document.getElementById('dl-all-btn');
             dlBtn.style.display = 'inline-block';
             dlBtn.onclick = () => {
-                const a1 = document.createElement('a'); a1.href = finalPhotoURL; a1.download = 'PHOTO.png'; a1.click();
+                const a1 = document.createElement('a'); a1.href = finalPhotoURL; a1.download = 'PHOTO_HD.png'; a1.click();
                 setTimeout(() => {
-                    const a2 = document.createElement('a'); a2.href = finalVideoURL; a2.download = 'VIDEO.mp4'; a2.click();
+                    const a2 = document.createElement('a'); a2.href = finalVideoURL; a2.download = 'VIDEO_HD.mp4'; a2.click();
                 }, 800);
             };
         };
@@ -355,10 +373,12 @@
         finalRecorder.start();
         const startT = Date.now();
         const vLoop = () => {
-            vCtx.clearRect(0,0,520,1530);
-            const vX = 15, vYStart = 40, vGap = 340, vW = 490, vH = 315;
+            vCtx.clearRect(0,0,vCvs.width,vCvs.height);
+            // ⚡️ 對應 2 倍解析度的繪製座標
+            const vX = 30, vYStart = 80, vGap = 680, vW = 980, vH = 630;
             vElements.forEach((v, i) => vCtx.drawImage(v, vX, vYStart + (i * vGap), vW, vH));
-            vCtx.drawImage(templateImg, 0, 0, 520, 1530);
+            vCtx.drawImage(templateImg, 0, 0, vCvs.width, vCvs.height);
+            
             if(Date.now() - startT < 4500) requestAnimationFrame(vLoop);
             else finalRecorder.stop();
         };
