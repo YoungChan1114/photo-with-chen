@@ -109,9 +109,7 @@
 
 <div id="sc-start" class="screen active">
         <img src="title.png" alt="TITLE" style="width:100%; max-width:300px; margin: 0 auto 5px auto; display: block;">
-        
         <div style="color:var(--blue); font-size:22px; margin-bottom:15px; text-align: center;">限定版建璋拍貼</div>
-        
         <button onclick="goStep('sc-welcome')">START</button>
     </div>
 
@@ -137,6 +135,7 @@
 
     <div id="sc-shooting" class="screen">
         <h2 id="shot-label">SHOT 1/4</h2>
+        <div style="color:var(--red); font-size:10px; margin-bottom:3px; text-align: center;">如遇角色動作沒有變換，請重整網頁</div>
         <div class="preview-box">
             <video id="main-video" autoplay playsinline></video>
             <img id="idol-layer" class="idol-overlay" src="idolchen_1.png">
@@ -152,7 +151,8 @@
         <p id="ios-tip" style="display:none; font-size:11px; color:var(--red); margin:5px;">若無法下載，請長按圖片/影片選擇儲存</p>
         <div id="loading-area">
             <div class="loading-spinner"></div>
-            <p>PROCESSING...</p>
+            <p style="color:var(--red);">ALMOST READY!</p>
+            <p style="color:var(--red);">PLEASE WAIT A MOMENT</p>
         </div>
         <div class="result-scroll">
             <img id="final-preview-img" style="display:none;">
